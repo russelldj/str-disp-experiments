@@ -19,6 +19,13 @@ FOLDER_TO_CITYSCAPES_SCRIPT = "/ofo-share/repos-david/mmsegmentation_utils/dev/d
 VIS_PREDS_SCRIPT = "/ofo-share/repos-david/mmsegmentation_utils/dev/visualization/visualize_semantic_labels.py"
 TRAIN_SCRIPT = "/ofo-share/repos-david/mmsegmentation/tools/train.py"
 
+## Python interpreter and script locations
+MMSEG_UTILS_PYTHON = "/ofo-share/repos-david/conda/envs/mmseg-utils/bin/python"
+MMSEG_PYTHON = "/ofo-share/repos-david/conda/envs/openmmlab/bin/python"
+
+VIS_PREDS_SCRIPT = "/ofo-share/repos-david/mmsegmentation_utils/dev/visualization/visualize_semantic_labels.py"
+INFERENCE_SCRIPT = "/ofo-share/repos-david/mmsegmentation/tools/inference.py"
+
 
 def get_IDs_to_labels(with_ground=False):
     IDs_to_labels = {
@@ -211,3 +218,24 @@ def get_aggregated_images_folder(training_sites):
 def get_work_dir(training_sites):
     training_data_folder = get_training_data_scratch_folder(training_sites)
     return Path(training_data_folder, "work_dir")
+
+
+def get_inference_image_folder(site_name):
+    return Path(
+        PROJECT_ROOT,
+        "per_site_processing",
+        site_name,
+        "03_training_data",
+        "images_near_labels",
+    )
+
+
+def get_prediction_folder(prediction_site, training_sites):
+    training_sites_str = get_training_sites_str(training_sites=training_sites)
+    return Path(
+        PROJECT_ROOT,
+        "per_site_processing",
+        prediction_site,
+        "04_model_preds",
+        f"{training_sites_str}_MVMT_model",
+    )
