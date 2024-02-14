@@ -1,29 +1,26 @@
 import os
 from pathlib import Path
 
-
+# Important folders
 PROJECT_ROOT = Path(os.path.abspath(""), "..", "..", "..").resolve()
 SCRATCH_ROOT = Path(Path.home(), "scratch", "organized_str_disp_MVMT_experiments")
 
+# Ground truth information
 LABELS_FILENAME = Path(
     PROJECT_ROOT, "field_ref", "crowns_drone_w_field_data_no_QUEV.geojson"
 )
 LABELS_COLUMN = "species_observed"
 
+# Conversion between short and long names
 LONG_SITE_NAME_DICT = {"valley": "ValleyA", "chips": "ChipsB", "delta": "DeltaB"}
 
+# Python utilities
 MMSEG_UTILS_PYTHON = "/ofo-share/repos-david/conda/envs/mmseg-utils/bin/python"
 MMSEG_PYTHON = "/ofo-share/repos-david/conda/envs/openmmlab/bin/python"
 
 FOLDER_TO_CITYSCAPES_SCRIPT = "/ofo-share/repos-david/mmsegmentation_utils/dev/dataset_creation/folder_to_cityscapes.py"
 VIS_PREDS_SCRIPT = "/ofo-share/repos-david/mmsegmentation_utils/dev/visualization/visualize_semantic_labels.py"
 TRAIN_SCRIPT = "/ofo-share/repos-david/mmsegmentation/tools/train.py"
-
-## Python interpreter and script locations
-MMSEG_UTILS_PYTHON = "/ofo-share/repos-david/conda/envs/mmseg-utils/bin/python"
-MMSEG_PYTHON = "/ofo-share/repos-david/conda/envs/openmmlab/bin/python"
-
-VIS_PREDS_SCRIPT = "/ofo-share/repos-david/mmsegmentation_utils/dev/visualization/visualize_semantic_labels.py"
 INFERENCE_SCRIPT = "/ofo-share/repos-david/mmsegmentation/tools/inference.py"
 
 
@@ -238,4 +235,34 @@ def get_prediction_folder(prediction_site, training_sites):
         prediction_site,
         "04_model_preds",
         f"{training_sites_str}_MVMT_model",
+    )
+
+
+def get_predicted_vector_labels_filename(prediction_site):
+    return Path(
+        PROJECT_ROOT,
+        "per_site_processing",
+        prediction_site,
+        "05_processed_predictions",
+        f"{prediction_site}_80m_chips_model.geojson",
+    )
+
+
+def get_numpy_export_faces_texture_filename(prediction_site):
+    NUMPY_EXPORT_FACES_TEXTURE_FILE = Path(
+        PROJECT_ROOT,
+        "per_site_processing",
+        prediction_site,
+        "05_processed_predictions",
+        f"{prediction_site}_80m_chips_model.npy",
+    )
+
+
+def get_numpy_export_cf_filename(prediction_site_name):
+    return Path(
+        PROJECT_ROOT,
+        "per_site_processing",
+        prediction_site_name,
+        "05_processed_predictions",
+        f"{prediction_site_name}_MVMT_confusion_matrix.npy",
     )
