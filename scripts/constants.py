@@ -7,12 +7,17 @@ SCRATCH_ROOT = Path(Path.home(), "scratch", "organized_str_disp_MVMT_experiments
 
 # Ground truth information
 LABELS_FILENAME = Path(
-    PROJECT_ROOT, "field_ref", "crowns_drone_w_field_data_no_QUEV.geojson"
+    PROJECT_ROOT, "field_ref", "crowns_drone_w_field_data_updated.gpkg"
 )
 LABELS_COLUMN = "species_observed"
 
 # Conversion between short and long names
-LONG_SITE_NAME_DICT = {"valley": "ValleyA", "chips": "ChipsB", "delta": "DeltaB"}
+LONG_SITE_NAME_DICT = {
+    "valley": "ValleyA",
+    "chips": "ChipsB",
+    "delta": "DeltaB",
+    "lassic": "Lassic",
+}
 
 # Python utilities
 MMSEG_UTILS_PYTHON = "/ofo-share/repos-david/conda/envs/mmseg-utils/bin/python"
@@ -24,17 +29,23 @@ TRAIN_SCRIPT = "/ofo-share/repos-david/mmsegmentation/tools/train.py"
 INFERENCE_SCRIPT = "/ofo-share/repos-david/mmsegmentation/tools/inference.py"
 
 
+TRAINING_IMGS_EXT = ".png"
+INFERENCE_IMGS_EXT = ".png"
+CHIP_SIZE = 3648
+BATCH_SIZE = 2
+INFERENCE_STRIDE = int(CHIP_SIZE / 2)
+
+
 def get_IDs_to_labels(with_ground=False):
     IDs_to_labels = {
         0: "ABCO",
         1: "CADE",
         2: "PILA",
-        3: "PIPO",
+        3: "PIPJ",
         4: "PSME",
-        5: "SNAG",
     }
     if with_ground:
-        IDs_to_labels[7] = "ground"
+        IDs_to_labels[5] = "ground"
 
     return IDs_to_labels
 
@@ -69,9 +80,20 @@ def get_mesh_filename(short_model_name):
         "meshes",
         "ValleyA-120m_20230323T0515_w-mesh.ply",
     )
+    # The mesh exported from Metashape
+    LASSIC_MESH_FILENAME = Path(
+        PROJECT_ROOT,
+        "per_site_processing",
+        short_model_name,
+        "02_photogrammetry",
+        "exports",
+        "meshes",
+        "Lassic-120m_20240213T0503_model_local.ply",
+    )
     MESH_FILENAME_DICT = {
         "chips": CHIPS_MESH_FILENAME,
         "delta": DELTA_MESH_FILENAME,
+        "lassic": LASSIC_MESH_FILENAME,
         "valley": VALLEY_MESH_FILENAME,
     }
 
@@ -109,10 +131,21 @@ def get_camera_filename(short_model_name):
         "cameras",
         "ValleyA-120m_20230323T0515_w-mesh_w-90m_20240212.xml",
     )
+    # The camera file exported from Metashape
+    LASSIC_CAMERAS_FILENAME = Path(
+        PROJECT_ROOT,
+        "per_site_processing",
+        short_model_name,
+        "02_photogrammetry",
+        "exports",
+        "cameras",
+        "Lassic-120m_20240213T0503_w-mesh_w-80m_20240214_aligned.xml",
+    )
 
     CAMERAS_FILENAME_DICT = {
         "chips": CHIPS_CAMERAS_FILENAME,
         "delta": DELTA_CAMERAS_FILENAME,
+        "lassic": LASSIC_CAMERAS_FILENAME,
         "valley": VALLEY_CAMERAS_FILENAME,
     }
 
@@ -143,6 +176,7 @@ def get_oblique_images_folder(short_model_name):
         "chips": "/ofo-share/str-disp_drone-data-partial/str-disp_drone-data_imagery-missions/ChipsB/ChipsB_80m_2021_complete",
         "delta": "/ofo-share/str-disp_drone-data-partial/str-disp_drone-data_imagery-missions/DeltaB/DeltaB_80m",
         "valley": "/ofo-share/str-disp_drone-data-partial/str-disp_drone-data_imagery-missions/ValleyA/ValleyA_90m",
+        "lassic": "/ofo-share/str-disp_drone-data-partial/str-disp_drone-data_imagery-missions/Lassic/Lassic_80m",
     }[short_model_name]
 
 
@@ -192,28 +226,48 @@ def get_training_sites_str(training_sites):
     return "_".join(training_sites)
 
 
-def get_training_data_scratch_folder(training_sites):
+def get_training_data_scratch_folder(training_sites, is_ortho):
     training_sites_str = get_training_sites_str(training_sites)
+    ortho_or_mvmt_str = "ortho" if is_ortho else "MVMT"
     return Path(
         SCRATCH_ROOT,
         "models",
         "multi_site",
-        training_sites_str,
+        ortho_or_mvmt_str + "_" + training_sites_str,
     )
 
 
-def get_aggregated_labels_folder(training_sites):
-    training_data_folder = get_training_data_scratch_folder(training_sites)
-    return Path(training_data_folder, "inputs", "labels")
+def get_training_data_folder(training_sites, is_ortho):
+    training_sites_str = get_training_sites_str(training_sites)
+    ortho_or_mvmt_str = "ortho" if is_ortho else "MVMT"
+    return Path(
+        PROJECT_ROOT,
+        "models",
+        "multi_site",
+        ortho_or_mvmt_str + "_" + training_sites_str,
+    )
 
 
-def get_aggregated_images_folder(training_sites):
-    training_data_folder = get_training_data_scratch_folder(training_sites)
-    return Path(training_data_folder, "inputs", "images")
+def get_aggregated_labels_folder(training_sites, is_ortho):
+    training_data_folder = get_training_data_scratch_folder(
+        training_sites, is_ortho=is_ortho
+    )
+    ortho_or_mvmt_str = "ortho" if is_ortho else "MVMT"
+    return Path(training_data_folder, ortho_or_mvmt_str, "inputs", "labels")
 
 
-def get_work_dir(training_sites):
-    training_data_folder = get_training_data_scratch_folder(training_sites)
+def get_aggregated_images_folder(training_sites, is_ortho):
+    training_data_folder = get_training_data_scratch_folder(
+        training_sites, is_ortho=is_ortho
+    )
+    ortho_or_mvmt_str = "ortho" if is_ortho else "MVMT"
+    return Path(training_data_folder, ortho_or_mvmt_str, "inputs", "images")
+
+
+def get_work_dir(training_sites, is_ortho):
+    training_data_folder = get_training_data_scratch_folder(
+        training_sites, is_ortho=is_ortho
+    )
     return Path(training_data_folder, "work_dir")
 
 
@@ -265,4 +319,81 @@ def get_numpy_export_cf_filename(prediction_site_name):
         prediction_site_name,
         "05_processed_predictions",
         f"{prediction_site_name}_MVMT_confusion_matrix.npy",
+    )
+
+
+def get_training_raster_filename(training_site):
+    return Path(
+        PROJECT_ROOT,
+        "per_site_processing",
+        training_site,
+        "02_photogrammetry",
+        "exports",
+        "orthos",
+        f"{training_site}.tif",
+    )
+
+
+def get_training_chips_folder(training_site):
+    return Path(
+        PROJECT_ROOT,
+        "per_site_processing",
+        training_site,
+        "03_training_data",
+        f"ortho_chipped_images_{training_site}",
+    )
+
+
+def get_inference_raster_filename(inference_site):
+    return Path(
+        PROJECT_ROOT,
+        "per_site_processing",
+        inference_site,
+        "02_photogrammetry",
+        "exports",
+        "orthos",
+        f"{inference_site}.tif",
+    )
+
+
+def get_inference_chips_folder(inference_site):
+    return Path(
+        PROJECT_ROOT,
+        "per_site_processing",
+        inference_site,
+        "04_model_preds",
+        "ortho_chipped_images",
+    )
+
+
+def get_aggregated_raster_pred_file(training_sites, inference_site):
+    training_sites_str = get_training_sites_str(training_sites=training_sites)
+    Path(
+        PROJECT_ROOT,
+        "per_site_processing",
+        inference_site,
+        "05_processed_predictions",
+        f"{training_sites_str}_model_ortho_pred.tif",
+    )
+
+
+def get_numpy_export_confusion_matrix_file(inference_site, is_ortho):
+    ortho_or_mvmt_str = "ortho" if is_ortho else "MVMT"
+    return Path(
+        PROJECT_ROOT,
+        "per_site_processing",
+        inference_site,
+        "05_processed_predictions",
+        f"{inference_site}_{ortho_or_mvmt_str}_confusion_matrix.npy",
+    )
+
+
+def get_figure_export_confusion_matrix_file(inference_site, is_ortho):
+    ortho_or_mvmt_str = "ortho" if is_ortho else "MVMT"
+    return Path(
+        PROJECT_ROOT,
+        "per_site_processing",
+        inference_site,
+        "05_processed_predictions",
+        f"{inference_site}_{ortho_or_mvmt_str}_confusion_matrix.png",
     )
