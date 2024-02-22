@@ -226,22 +226,11 @@ def get_training_sites_str(training_sites):
     return "_".join(training_sites)
 
 
-def get_training_data_scratch_folder(training_sites, is_ortho):
+def get_training_data_folder(training_sites, is_ortho, is_scratch):
     training_sites_str = get_training_sites_str(training_sites)
     ortho_or_mvmt_str = "ortho" if is_ortho else "MVMT"
     return Path(
-        SCRATCH_ROOT,
-        "models",
-        "multi_site",
-        ortho_or_mvmt_str + "_" + training_sites_str,
-    )
-
-
-def get_training_data_folder(training_sites, is_ortho):
-    training_sites_str = get_training_sites_str(training_sites)
-    ortho_or_mvmt_str = "ortho" if is_ortho else "MVMT"
-    return Path(
-        PROJECT_ROOT,
+        SCRATCH_ROOT if is_scratch else PROJECT_ROOT,
         "models",
         "multi_site",
         ortho_or_mvmt_str + "_" + training_sites_str,
@@ -249,25 +238,26 @@ def get_training_data_folder(training_sites, is_ortho):
 
 
 def get_aggregated_labels_folder(training_sites, is_ortho):
-    training_data_folder = get_training_data_scratch_folder(
-        training_sites, is_ortho=is_ortho
+    training_data_folder = get_training_data_folder(
+        training_sites, is_ortho=is_ortho, is_scratch=True
     )
     ortho_or_mvmt_str = "ortho" if is_ortho else "MVMT"
     return Path(training_data_folder, ortho_or_mvmt_str, "inputs", "labels")
 
 
 def get_aggregated_images_folder(training_sites, is_ortho):
-    training_data_folder = get_training_data_scratch_folder(
-        training_sites, is_ortho=is_ortho
+    training_data_folder = get_training_data_folder(
+        training_sites, is_ortho=is_ortho, is_scratch=True
     )
     ortho_or_mvmt_str = "ortho" if is_ortho else "MVMT"
     return Path(training_data_folder, ortho_or_mvmt_str, "inputs", "images")
 
 
-def get_work_dir(training_sites, is_ortho):
-    training_data_folder = get_training_data_scratch_folder(
-        training_sites, is_ortho=is_ortho
+def get_work_dir(training_sites, is_ortho, is_scratch):
+    training_data_folder = get_training_data_folder(
+        training_sites, is_ortho=is_ortho, is_scratch=is_scratch
     )
+
     return Path(training_data_folder, "work_dir")
 
 
@@ -281,14 +271,14 @@ def get_inference_image_folder(site_name):
     )
 
 
-def get_prediction_folder(prediction_site, training_sites):
+def get_prediction_folder(prediction_site, training_sites, is_ortho):
     training_sites_str = get_training_sites_str(training_sites=training_sites)
     return Path(
         PROJECT_ROOT,
         "per_site_processing",
         prediction_site,
         "04_model_preds",
-        f"{training_sites_str}_MVMT_model",
+        f"{training_sites_str}_{'ortho' if is_ortho else 'MVMT'}_model",
     )
 
 
@@ -303,7 +293,7 @@ def get_predicted_vector_labels_filename(prediction_site):
 
 
 def get_numpy_export_faces_texture_filename(prediction_site):
-    NUMPY_EXPORT_FACES_TEXTURE_FILE = Path(
+    return Path(
         PROJECT_ROOT,
         "per_site_processing",
         prediction_site,
@@ -368,7 +358,7 @@ def get_inference_chips_folder(inference_site):
 
 def get_aggregated_raster_pred_file(training_sites, inference_site):
     training_sites_str = get_training_sites_str(training_sites=training_sites)
-    Path(
+    return Path(
         PROJECT_ROOT,
         "per_site_processing",
         inference_site,
