@@ -1,0 +1,6 @@
+outs:
+- md5: 17fa41a79217487211ca75c0680006e5.dir
+  size: 851664709
+  nfiles: 56
+  hash: md5
+  path: ortho_chipped_images_chips

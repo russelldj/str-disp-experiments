@@ -1,0 +1,5 @@
+outs:
+- md5: ae77b9bbd5e77b8f5393aee0a50be7db
+  size: 27515939
+  hash: md5
+  path: labeled.ply
