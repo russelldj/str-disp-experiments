@@ -1,0 +1,6 @@
+outs:
+- md5: eea24594d35e9463acb844238a13f622.dir
+  size: 671128631
+  nfiles: 48
+  hash: md5
+  path: ortho_chipped_images_lassic

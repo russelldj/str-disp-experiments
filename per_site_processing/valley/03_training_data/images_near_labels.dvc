@@ -1,0 +1,6 @@
+outs:
+- md5: 4fa3561681ff13253faf4ac1c9951236.dir
+  size: 1227922725
+  nfiles: 143
+  hash: md5
+  path: images_near_labels

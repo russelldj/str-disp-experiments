@@ -1,0 +1,6 @@
+outs:
+- md5: e876a1bb52f510be2435278ce00887ad.dir
+  size: 1259844772
+  nfiles: 86
+  hash: md5
+  path: ortho_chipped_images_delta

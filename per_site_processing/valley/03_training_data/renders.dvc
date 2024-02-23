@@ -1,0 +1,6 @@
+outs:
+- md5: cc2669c248b8bbfb23fd7e5145e9f4be.dir
+  size: 15468132
+  nfiles: 288
+  hash: md5
+  path: renders

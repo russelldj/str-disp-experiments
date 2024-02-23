@@ -1,0 +1,6 @@
+outs:
+- md5: e66de1e9e4e0d795948e62ae56963ff6.dir
+  size: 322051519
+  nfiles: 22
+  hash: md5
+  path: ortho_chipped_images_valley
