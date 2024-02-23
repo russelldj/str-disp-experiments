@@ -35,6 +35,15 @@ CHIP_SIZE = 3648
 BATCH_SIZE = 2
 INFERENCE_STRIDE = int(CHIP_SIZE / 2)
 
+# Points less than this height (meters) above the DTM are considered ground
+HEIGHT_ABOVE_GROUND_THRESH = 2
+# The image is downsampled to this fraction for accelerated rendering
+RENDER_IMAGE_SCALE = 1
+# Cameras within this distance of the traing data are used in the rendering process
+BUFFER_RADIUS_METERS = 50
+# Downsample target
+DOWNSAMPLE_TARGET = 1
+
 
 def get_IDs_to_labels(with_ground=False):
     IDs_to_labels = {
@@ -150,6 +159,18 @@ def get_camera_filename(short_model_name):
     }
 
     return CAMERAS_FILENAME_DICT[short_model_name]
+
+
+def get_mesh_transform_filename(site_name):
+    if site_name in ("chips", "delta", "valley"):
+        return get_camera_filename(site_name)
+    elif site_name == "lassic":
+        # Lassic was processed differently, so this hack is required
+        return Path(
+            "/ofo-share/str-disp_drone-data-partial/imagery-processed/outputs/120m-01/Lassic-120m_20240213T0503_cameras.xml"
+        )
+    else:
+        raise ValueError(f"Site {site_name} not found")
 
 
 def get_DTM_filename(short_model_name):
@@ -282,33 +303,65 @@ def get_prediction_folder(prediction_site, training_sites, is_ortho):
     )
 
 
-def get_predicted_vector_labels_filename(prediction_site):
+def get_predicted_output_base_file(prediction_site, training_sites):
+    training_sites_str = get_training_sites_str(training_sites)
     return Path(
         PROJECT_ROOT,
         "per_site_processing",
         prediction_site,
         "05_processed_predictions",
-        f"{prediction_site}_80m_chips_model.geojson",
+        f"{prediction_site}_80m_{training_sites_str}_model",
     )
 
 
-def get_numpy_export_faces_texture_filename(prediction_site):
+def get_predicted_vector_labels_filename(prediction_site, training_sites):
+    return get_predicted_output_base_file(
+        prediction_site=prediction_site, training_sites=training_sites
+    ).with_suffix(".geojson")
+
+
+def get_predicted_polygons_labels_filename(prediction_site, training_sites, is_ortho):
+    base_file = get_predicted_output_base_file(
+        prediction_site=prediction_site, training_sites=training_sites
+    )
     return Path(
-        PROJECT_ROOT,
-        "per_site_processing",
-        prediction_site,
-        "05_processed_predictions",
-        f"{prediction_site}_80m_chips_model.npy",
+        str(base_file) + f"labeled_polygons_{'ortho' if is_ortho else 'MVMT'}.geojson"
     )
 
 
-def get_numpy_export_cf_filename(prediction_site_name):
+def get_numpy_export_faces_texture_filename(prediction_site, training_sites):
+    return get_predicted_output_base_file(
+        prediction_site=prediction_site, training_sites=training_sites
+    ).with_suffix(".npy")
+
+
+def get_numpy_export_cf_filename(prediction_site_name, training_sites, is_ortho):
+    base_file = get_predicted_output_base_file(
+        prediction_site=prediction_site_name, training_sites=training_sites
+    )
+    extension_str = f"_{'ortho' if is_ortho else 'MVMT'}_confusion_matrix.npy"
+    return Path(str(base_file) + extension_str)
+
+
+def get_numpy_export_confusion_matrix_file(inference_site, is_ortho):
+    ortho_or_mvmt_str = "ortho" if is_ortho else "MVMT"
     return Path(
         PROJECT_ROOT,
         "per_site_processing",
-        prediction_site_name,
+        inference_site,
         "05_processed_predictions",
-        f"{prediction_site_name}_MVMT_confusion_matrix.npy",
+        f"{inference_site}_{ortho_or_mvmt_str}_confusion_matrix.npy",
+    )
+
+
+def get_figure_export_confusion_matrix_file(inference_site, is_ortho):
+    ortho_or_mvmt_str = "ortho" if is_ortho else "MVMT"
+    return Path(
+        PROJECT_ROOT,
+        "per_site_processing",
+        inference_site,
+        "05_processed_predictions",
+        f"{inference_site}_{ortho_or_mvmt_str}_confusion_matrix.png",
     )
 
 
@@ -364,26 +417,4 @@ def get_aggregated_raster_pred_file(training_sites, inference_site):
         inference_site,
         "05_processed_predictions",
         f"{training_sites_str}_model_ortho_pred.tif",
-    )
-
-
-def get_numpy_export_confusion_matrix_file(inference_site, is_ortho):
-    ortho_or_mvmt_str = "ortho" if is_ortho else "MVMT"
-    return Path(
-        PROJECT_ROOT,
-        "per_site_processing",
-        inference_site,
-        "05_processed_predictions",
-        f"{inference_site}_{ortho_or_mvmt_str}_confusion_matrix.npy",
-    )
-
-
-def get_figure_export_confusion_matrix_file(inference_site, is_ortho):
-    ortho_or_mvmt_str = "ortho" if is_ortho else "MVMT"
-    return Path(
-        PROJECT_ROOT,
-        "per_site_processing",
-        inference_site,
-        "05_processed_predictions",
-        f"{inference_site}_{ortho_or_mvmt_str}_confusion_matrix.png",
     )
