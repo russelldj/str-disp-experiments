@@ -1,0 +1,6 @@
+outs:
+- md5: 6efef0dc0b8817cc754378febf05d949.dir
+  size: 88906510
+  nfiles: 11
+  hash: md5
+  path: chips_delta_valley_MVMT_model_vis

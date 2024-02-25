@@ -1,0 +1,6 @@
+outs:
+- md5: 82a7ba57a82a2310fc066c751c803dcd.dir
+  size: 92780409
+  nfiles: 11
+  hash: md5
+  path: chips_delta_lassic_MVMT_model_vis

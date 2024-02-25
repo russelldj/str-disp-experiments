@@ -1,0 +1,6 @@
+outs:
+- md5: 46249adfc40d81527ff0f3e457bfb522.dir
+  size: 72806353
+  nfiles: 496
+  hash: md5
+  path: chips_delta_valley_MVMT_model

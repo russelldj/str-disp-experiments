@@ -1,0 +1,6 @@
+outs:
+- md5: e4a2e355bc0787bf08f6e5c7afd4fa61.dir
+  size: 100217722
+  nfiles: 701
+  hash: md5
+  path: chips_lassic_valley_MVMT_model
