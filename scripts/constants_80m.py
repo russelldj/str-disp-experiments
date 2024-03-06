@@ -5,8 +5,8 @@ from pathlib import Path
 # PROJECT_ROOT = Path(os.path.abspath(""), "..", "..", "..").resolve()
 # SCRATCH_ROOT = Path(Path.home(), "scratch", "organized_str_disp_MVMT_experiments")
 
-PROJECT_ROOT = Path(os.path.abspath("/ofo-share"), "scratch-derek", "organized-str-disp-MVMT-experiments")
-SCRATCH_ROOT = Path(os.path.abspath("/ofo-share"), "scratch-derek", "organized-str-disp-MVMT-experiments_scratch")
+PROJECT_ROOT = Path(os.path.abspath("/ofo-share"), "scratch-derek", "organized-str-disp-MVMT-experiments_80m")
+SCRATCH_ROOT = Path(os.path.abspath("/ofo-share"), "scratch-derek", "organized-str-disp-MVMT-experiments_80m_scratch")
 
 # Ground truth information
 LABELS_FILENAME = Path(
@@ -197,10 +197,10 @@ def get_image_folder(short_model_name):
 
 def get_oblique_images_folder(short_model_name):
     return {
-        "chips": "/ofo-share/str-disp_drone-data-partial/str-disp_drone-data_imagery-missions/ChipsB/ChipsB_120m",
-        "delta": "/ofo-share/str-disp_drone-data-partial/str-disp_drone-data_imagery-missions/DeltaB/DeltaB_120m",
-        "valley": "/ofo-share/str-disp_drone-data-partial/str-disp_drone-data_imagery-missions/ValleyA/ValleyA_120m",
-        "lassic": "/ofo-share/str-disp_drone-data-partial/str-disp_drone-data_imagery-missions/Lassic/Lassic_120m",
+        "chips": "/ofo-share/str-disp_drone-data-partial/str-disp_drone-data_imagery-missions/ChipsB/ChipsB_80m_2021_complete",
+        "delta": "/ofo-share/str-disp_drone-data-partial/str-disp_drone-data_imagery-missions/DeltaB/DeltaB_80m",
+        "valley": "/ofo-share/str-disp_drone-data-partial/str-disp_drone-data_imagery-missions/ValleyA/ValleyA_90m",
+        "lassic": "/ofo-share/str-disp_drone-data-partial/str-disp_drone-data_imagery-missions/Lassic/Lassic_80m",
     }[short_model_name]
 
 
