@@ -38,6 +38,8 @@ CHIP_SIZE = 3648
 BATCH_SIZE = 2
 INFERENCE_STRIDE = int(CHIP_SIZE / 2)
 
+AGGREGATE_IMAGE_SCALE = 1
+
 # Points less than this height (meters) above the DTM are considered ground
 HEIGHT_ABOVE_GROUND_THRESH = 2
 # The image is downsampled to this fraction for accelerated rendering
