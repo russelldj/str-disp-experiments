@@ -47,6 +47,8 @@ BUFFER_RADIUS_METERS = 50
 # Downsample target
 DOWNSAMPLE_TARGET = 1
 
+AGGREGATE_IMAGE_SCALE = 1
+
 
 def get_IDs_to_labels(with_ground=False):
     IDs_to_labels = {
