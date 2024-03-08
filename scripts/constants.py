@@ -49,6 +49,9 @@ DOWNSAMPLE_TARGET = 1
 
 AGGREGATE_IMAGE_SCALE = 1
 
+# Weight of ground when assigning polygons labels
+GROUND_WEIGHT_POLYGON_LABELING = 0.01
+
 
 def get_IDs_to_labels(with_ground=False):
     IDs_to_labels = {

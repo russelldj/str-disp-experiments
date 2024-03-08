@@ -40,6 +40,9 @@ INFERENCE_STRIDE = int(CHIP_SIZE / 2)
 
 AGGREGATE_IMAGE_SCALE = 1
 
+# Weight of ground when assigning polygons labels
+GROUND_WEIGHT_POLYGON_LABELING = 0.01
+
 # Points less than this height (meters) above the DTM are considered ground
 HEIGHT_ABOVE_GROUND_THRESH = 2
 # The image is downsampled to this fraction for accelerated rendering
